@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafe Cashier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="bg-gray-100 p-6">
+<div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white p-6 rounded-xl shadow-md">
+        <h2 class="text-2xl font-bold mb-4">Menu</h2>
+        <div class="grid grid-cols-2 gap-4">
+            <button onclick="addToCart('Latte', 4.50)" class="bg-blue-500 text-white p-4 rounded-lg font-bold">Latte - $4.50</button>
+            <button onclick="addToCart('Cappuccino', 4.00)" class="bg-blue-500 text-white p-4 rounded-lg font-bold">Cappuccino - $4.00</button>
+            <button onclick="addToCart('Black Coffee', 2.50)" class="bg-blue-500 text-white p-4 rounded-lg font-bold">Coffee - $2.50</button>
+            <button onclick="addToCart('Tea', 3.00)" class="bg-blue-500 text-white p-4 rounded-lg font-bold">Tea - $3.00</button>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-md flex flex-col">
+        <h2 class="text-2xl font-bold mb-4">Current Order</h2>
+        <div id="cart-items" class="flex-grow space-y-2 mb-4"></div>
+        <div class="border-t pt-4">
+            <div class="flex justify-between text-xl font-bold">
+                <span>Total:</span>
+                <span id="order-total">$0.00</span>
+            </div>
+            <button onclick="submitOrder()" class="w-full mt-4 bg-green-600 text-white py-4 rounded-lg text-xl font-bold">SEND TO BARISTA</button>
+        </div>
+        <div class="mt-6 text-sm text-gray-500">Total Raised Today: <span id="grand-total">$0.00</span></div>
+    </div>
+</div>
+
+<script>
+    const socket = io();
+    let cart = [];
+    let total = 0;
+
+    function addToCart(name, price) {
+        cart.push({ name, price });
+        updateUI();
+    }
+
+    function updateUI() {
+        const list = document.getElementById('cart-items');
+        list.innerHTML = cart.map(item => `<div class="flex justify-between"><span>${item.name}</span><span>$${item.price.toFixed(2)}</span></div>`).join('');
+        total = cart.reduce((sum, item) => sum + item.price, 0);
+        document.getElementById('order-total').innerText = `$${total.toFixed(2)}`;
+    }
+
+    function submitOrder() {
+        if (cart.length === 0) return;
+        const orderData = { items: cart.map(i => i.name), total: total };
+        socket.emit('place-order', orderData);
+        cart = [];
+        updateUI();
+    }
+
+    socket.on('order-update', (data) => {
+        document.getElementById('grand-total').innerText = `$${data.totalRevenue.toFixed(2)}`;
+    });
+
+    socket.on('init-data', (data) => {
+        document.getElementById('grand-total').innerText = `$${data.totalRevenue.toFixed(2)}`;
+    });
+</script>
+</body>
+</html>
