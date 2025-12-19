@@ -17,14 +17,56 @@
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body class="bg-gray-100 p-6">
-<div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
     <div class="bg-white p-6 rounded-xl shadow-md">
-        <h2 class="text-2xl font-bold mb-4">Menu</h2>
-        <div class="grid grid-cols-2 gap-4">
-            <button onclick="addToCart('Latte', 4.50)" class="bg-blue-500 text-white p-4 rounded-lg font-bold">Latte - $4.50</button>
-            <button onclick="addToCart('Cappuccino', 4.00)" class="bg-blue-500 text-white p-4 rounded-lg font-bold">Cappuccino - $4.00</button>
-            <button onclick="addToCart('Black Coffee', 2.50)" class="bg-blue-500 text-white p-4 rounded-lg font-bold">Coffee - $2.50</button>
-            <button onclick="addToCart('Tea', 3.00)" class="bg-blue-500 text-white p-4 rounded-lg font-bold">Tea - $3.00</button>
+        <h2 class="text-3xl font-bold mb-6">Matcha</h2>
+        <div class="grid grid-cols-2 gap-4 mb-8 text-white">
+            <button onclick="addToCart('Matcha Latte', 6)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Matcha Latte</div>
+                <div class="font-light">$6</div>
+            </button>
+            <button onclick="addToCart('Banana Bread Matcha', 6.5)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Banana Bread Matcha</div>
+                <div class="font-light">$6.5</div>
+            </button>
+            <button onclick="addToCart('Strawberry Matcha', 6.5)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Strawberry Matcha</div>
+                <div class="font-light">$6.5</div>
+            </button>
+            <button onclick="addToCart('Ube Matcha', 6.5)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Ube Matcha</div>
+                <div class="font-light">$6.5</div>
+            </button>
+        </div>
+        <h2 class="text-3xl font-bold mb-6">Coffee</h2>
+        <div class="grid grid-cols-2 gap-4 mb-8 text-white">
+            <button onclick="addToCart('Americano', 3)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Americano</div>
+                <div class="font-light">$3</div>
+            </button>
+            <button onclick="addToCart('Latte', 4)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Latte</div>
+                <div class="font-light">$4</div>
+            </button>
+            <button onclick="addToCart('Peppermint Mocha', 5)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Peppermint Mocha</div>
+                <div class="font-light">$5</div>
+            </button>
+            <button onclick="addToCart('Gingerbread Latte', 6.5)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Gingerbread Latte</div>
+                <div class="font-light">$6.5</div>
+            </button>
+        </div>
+          <h2 class="text-3xl font-bold mb-6">Other</h2>
+        <div class="grid grid-cols-2 gap-4 text-white">
+            <button onclick="addToCart('Hot Chocolate', 3)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Hot Chocolate</div>
+                <div class="font-light">$3</div>
+            </button>
+            <button onclick="addToCart('Strawberry Lemonade', 4)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Strawberry Lemonade</div>
+                <div class="font-light">$4</div>
+            </button>
         </div>
     </div>
 
@@ -52,9 +94,54 @@
         updateUI();
     }
 
+    function updateQuantity(index, delta) {
+        if (delta > 0) {
+            cart.push({ name: cart[index].name, price: cart[index].price });
+        } else {
+            cart.splice(index, 1);
+        }
+        updateUI();
+    }
+
+    function removeItem(index) {
+        cart.splice(index, 1);
+        updateUI();
+    }
+
     function updateUI() {
         const list = document.getElementById('cart-items');
-        list.innerHTML = cart.map(item => `<div class="flex justify-between"><span>${item.name}</span><span>$${item.price.toFixed(2)}</span></div>`).join('');
+        
+        // Group items by name to show quantity
+        const grouped = {};
+        cart.forEach((item, idx) => {
+            if (!grouped[item.name]) {
+                grouped[item.name] = { price: item.price, indices: [], total: 0 };
+            }
+            grouped[item.name].indices.push(idx);
+            grouped[item.name].total += item.price;
+        });
+        
+        list.innerHTML = '';
+        for (let name in grouped) {
+            const item = grouped[name];
+            const quantity = item.indices.length;
+            const firstIndex = item.indices[0];
+            
+            const div = document.createElement('div');
+            div.className = 'bg-white p-3 rounded-lg flex justify-between items-center';
+            div.innerHTML = `
+                <div class="flex-1">${name}</div>
+                <div class="flex items-center gap-3">
+                    <button onclick="updateQuantity(${firstIndex}, -1)" class="w-8 h-8 bg-gray-300 rounded hover:bg-gray-400 font-bold">−</button>
+                    <input type="text" value="${quantity}" class="w-12 text-center border border-gray-300 rounded" readonly>
+                    <button onclick="updateQuantity(${firstIndex}, 1)" class="w-8 h-8 bg-gray-300 rounded hover:bg-gray-400 font-bold">+</button>
+                    <div class="w-16 text-right">$${item.total.toFixed(2)}</div>
+                    <button onclick="removeItem(${firstIndex})" class="w-8 h-8 text-xl hover:text-red-600 font-bold">×</button>
+                </div>
+            `;
+            list.appendChild(div);
+        }
+        
         total = cart.reduce((sum, item) => sum + item.price, 0);
         document.getElementById('order-total').innerText = `$${total.toFixed(2)}`;
     }

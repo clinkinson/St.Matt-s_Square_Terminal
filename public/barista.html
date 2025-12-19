@@ -26,17 +26,34 @@
 
     function renderOrders(orders) {
         const grid = document.getElementById('order-grid');
-        grid.innerHTML = orders.map(order => `
+        grid.innerHTML = orders.map(order => {
+            const itemCounts = {};
+            order.items.forEach(item => {
+                itemCounts[item] = (itemCounts[item] || 0) + 1;
+            });
+            
+            const itemsDisplay = Object.entries(itemCounts)
+                .map(([item, count]) => {
+                    if (count > 1) {
+                        return `<div class="text-lg font-bold mb-1">• ${item} x${count}</div>`;
+                    } else {
+                        return `<div class="text-lg font-bold mb-1">• ${item}</div>`;
+                    }
+                })
+                .join('');
+            
+            return `
                 <div class="bg-zinc-800 border-2 border-orange-500 rounded-lg p-4 flex flex-col h-full shadow-xl">
                     <div class="text-orange-500 text-xs font-mono uppercase tracking-widest">Order #${order.id.toString().slice(-4)}</div>
                     <button onclick="completeOrder(${order.id})" class="mt-4 bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 rounded-md transition">
                         COMPLETE
                     </button>
                     <div class="flex-grow overflow-y-auto mt-4">
-                        ${order.items.map(item => `<div class="text-lg font-bold mb-1">• ${item}</div>`).join('')}
+                        ${itemsDisplay}
                     </div>
                 </div>
-            `).join('');
+            `;
+        }).join('');
     }
 
     function completeOrder(id) {
