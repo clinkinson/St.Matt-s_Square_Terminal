@@ -16,71 +16,97 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="/socket.io/socket.io.js"></script>
 </head>
-<body class="bg-gray-100 p-6">
-<div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div class="bg-white p-6 rounded-xl shadow-md">
+<body class="bg-gray-100 p-6 h-screen overflow-hidden">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
+    <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-md border border-gray-200 overflow-y-auto h-full pb-10">
         <h2 class="text-3xl font-bold mb-6">Matcha</h2>
         <div class="grid grid-cols-2 gap-4 mb-8 text-white">
-            <button onclick="addToCart('Matcha Latte', 6)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
-                <div class="font-semibold">Matcha Latte</div>
-                <div class="font-light">$6</div>
+            <button onclick="addToCart('Matcha Latte', 6, 'drink')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition">
+                <div class="font-semibold">Matcha Latte</div><div class="font-light">$6</div>
             </button>
-            <button onclick="addToCart('Banana Bread Matcha', 6.5)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
-                <div class="font-semibold">Banana Bread Matcha</div>
-                <div class="font-light">$6.5</div>
+            <button onclick="addToCart('Banana Bread Matcha', 6.5, 'drink')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition">
+                <div class="font-semibold">Banana Bread Matcha</div><div class="font-light">$6.5</div>
             </button>
-            <button onclick="addToCart('Strawberry Matcha', 6.5)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
-                <div class="font-semibold">Strawberry Matcha</div>
-                <div class="font-light">$6.5</div>
+            <button onclick="addToCart('Strawberry Matcha', 6.5, 'drink')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition">
+                <div class="font-semibold">Strawberry Matcha</div><div class="font-light">$6.5</div>
             </button>
-            <button onclick="addToCart('Ube Matcha', 6.5)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
-                <div class="font-semibold">Ube Matcha</div>
-                <div class="font-light">$6.5</div>
+            <button onclick="addToCart('Ube Matcha', 6.5, 'drink')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition">
+                <div class="font-semibold">Ube Matcha</div><div class="font-light">$6.5</div>
             </button>
         </div>
+
         <h2 class="text-3xl font-bold mb-6">Coffee</h2>
         <div class="grid grid-cols-2 gap-4 mb-8 text-white">
-            <button onclick="addToCart('Americano', 3)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
-                <div class="font-semibold">Americano</div>
-                <div class="font-light">$3</div>
+            <button onclick="addToCart('Americano', 3, 'drink')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition">
+                <div class="font-semibold">Americano</div><div class="font-light">$3</div>
             </button>
-            <button onclick="addToCart('Latte', 4)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
-                <div class="font-semibold">Latte</div>
-                <div class="font-light">$4</div>
-            </button>
-            <button onclick="addToCart('Peppermint Mocha', 5)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
-                <div class="font-semibold">Peppermint Mocha</div>
-                <div class="font-light">$5</div>
-            </button>
-            <button onclick="addToCart('Gingerbread Latte', 6.5)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+            <button onclick="addToCart('Latte', 4, 'drink')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition">
+                <div class="font-semibold">Latte</div><div class="font-light">$4</div>
+            </button><button onclick="addToCart('Peppermint Mocha', 5, 'drink')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+            <div class="font-semibold">Peppermint Mocha</div>
+            <div class="font-light">$5</div>
+        </button>
+            <button onclick="addToCart('Gingerbread Latte', 6.5, 'drink')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
                 <div class="font-semibold">Gingerbread Latte</div>
                 <div class="font-light">$6.5</div>
             </button>
         </div>
-          <h2 class="text-3xl font-bold mb-6">Other</h2>
-        <div class="grid grid-cols-2 gap-4 text-white">
-            <button onclick="addToCart('Hot Chocolate', 3)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+        <h2 class="text-3xl font-bold mb-6">Other Drinks</h2>
+        <div class="grid grid-cols-2 gap-4 mb-8 text-white">
+            <button onclick="addToCart('Hot Chocolate', 3, 'drink')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
                 <div class="font-semibold">Hot Chocolate</div>
                 <div class="font-light">$3</div>
             </button>
-            <button onclick="addToCart('Strawberry Lemonade', 4)" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+            <button onclick="addToCart('Strawberry Lemonade', 4, 'drink')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
                 <div class="font-semibold">Strawberry Lemonade</div>
                 <div class="font-light">$4</div>
             </button>
         </div>
+        <h2 class="text-3xl font-bold mb-6">Food & Treats</h2>
+        <div class="grid grid-cols-2 gap-4 mb-8 text-white">
+            <button onclick="addToCart('Egg Tart', 3, 'food')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Egg Tart</div>
+                <div class="font-light">$3</div>
+            </button>
+            <button onclick="addToCart('Sausage Roll', 4, 'food')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Sausage Roll</div>
+                <div class="font-light">$4</div>
+            </button>
+            <button onclick="addToCart('Blueberry Muffin', 3.5, 'food')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Blueberry Muffin</div>
+                <div class="font-light">$3.50</div>
+            </button>
+            <button onclick="addToCart('Matcha White Choco Brownie', 3.5, 'food')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Matcha White Choco Brownie</div>
+                <div class="font-light">$3.50</div>
+            </button>
+            <button onclick="addToCart('Snickerdoodle', 2, 'food')" class="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-800 transition ease-in-out">
+                <div class="font-semibold">Snickerdoodle</div>
+                <div class="font-light">$2</div>
+            </button>
+        </div>
     </div>
 
-    <div class="bg-white p-6 rounded-xl shadow-md flex flex-col">
+    <div class="bg-white p-6 rounded-xl shadow-md flex flex-col h-full border border-gray-200">
         <h2 class="text-2xl font-bold mb-4">Current Order</h2>
-        <div id="cart-items" class="flex-grow space-y-2 mb-4"></div>
+
+        <div id="cart-items" class="flex-grow space-y-2 mb-4 overflow-y-auto pr-2"></div>
+
         <div class="border-t pt-4">
-            <div class="flex justify-between text-xl font-bold">
+            <input type="text" id="order-name-input" oninput="validateOrder()" placeholder="Customer Name..."
+                   class="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-[#9DAE72] outline-none text-lg mb-4">
+
+            <div class="flex justify-between text-xl font-bold mb-4">
                 <span>Total:</span>
                 <span id="order-total">$0.00</span>
             </div>
-            <button onclick="submitOrder()" class="w-full mt-4 bg-green-600 text-white py-4 rounded-lg text-xl font-bold">SEND TO BARISTA</button>
+
+            <button id="send-button" onclick="submitOrder()" disabled
+                    class="w-full bg-[#9DAE72] disabled:bg-gray-300 text-white py-4 rounded-lg text-xl font-bold shadow-md">
+                SEND TO BARISTA
+            </button>
+            <div class="mt-4 text-center text-sm text-gray-500 font-medium">Raised Today: <span id="grand-total">$0.00</span></div>
         </div>
-        <div class="mt-6 text-sm text-gray-500">Total Raised Today: <span id="grand-total">$0.00</span></div>
     </div>
 </div>
 
@@ -89,16 +115,16 @@
     let cart = [];
     let total = 0;
 
-    function addToCart(name, price) {
-        cart.push({ name, price });
+    function addToCart(name, price, type = 'drink') {
+        cart.push({ name, price, type, sub: "" });
         updateUI();
     }
 
-    function updateQuantity(index, delta) {
-        if (delta > 0) {
-            cart.push({ name: cart[index].name, price: cart[index].price });
+    function toggleOat(index) {
+        if (cart[index].sub === "Oat") {
+            cart[index].sub = "";
         } else {
-            cart.splice(index, 1);
+            cart[index].sub = "Oat";
         }
         updateUI();
     }
@@ -110,47 +136,115 @@
 
     function updateUI() {
         const list = document.getElementById('cart-items');
-        
-        // Group items by name to show quantity
         const grouped = {};
+
+        // Grouping logic: Name + Sub = Unique Line Item
         cart.forEach((item, idx) => {
-            if (!grouped[item.name]) {
-                grouped[item.name] = { price: item.price, indices: [], total: 0 };
+            const fullName = item.sub ? `${item.name} (${item.sub})` : item.name;
+
+            if (!grouped[fullName]) {
+                grouped[fullName] = {
+                    indices: [],
+                    totalPrice: 0,
+                    type: item.type // Store the type so we know if it's a drink or food
+                };
             }
-            grouped[item.name].indices.push(idx);
-            grouped[item.name].total += item.price;
+            grouped[fullName].indices.push(idx);
+            grouped[fullName].totalPrice += item.price;
         });
-        
+
         list.innerHTML = '';
-        for (let name in grouped) {
-            const item = grouped[name];
-            const quantity = item.indices.length;
-            const firstIndex = item.indices[0];
-            
+        for (let fullName in grouped) {
+            const data = grouped[fullName];
+            const firstIdx = data.indices[0];
+
             const div = document.createElement('div');
-            div.className = 'bg-white p-3 rounded-lg flex justify-between items-center';
+            div.className = 'bg-gray-50 p-3 rounded-lg flex flex-col border border-gray-200 mb-2';
+
+            // This variable will hold the HTML for the Oat button ONLY if it's a drink
+            const oatButtonHtml = data.type === 'drink' ? `
+            <button onclick="toggleOat(${firstIdx})"
+                    class="px-3 py-1 text-sm rounded font-semibold border ${cart[firstIdx].sub === 'Oat' ? 'bg-[#9DAE72] text-white' : 'bg-white text-gray-500'}">
+                ${cart[firstIdx].sub === 'Oat' ? '✓ Oat Milk' : '+ Add Oat'}
+            </button>
+        ` : '<div></div>'; // Empty div if it's food to keep spacing consistent
+
             div.innerHTML = `
-                <div class="flex-1">${name}</div>
-                <div class="flex items-center gap-3">
-                    <button onclick="updateQuantity(${firstIndex}, -1)" class="w-8 h-8 bg-gray-300 rounded hover:bg-gray-400 font-bold">−</button>
-                    <input type="text" value="${quantity}" class="w-12 text-center border border-gray-300 rounded" readonly>
-                    <button onclick="updateQuantity(${firstIndex}, 1)" class="w-8 h-8 bg-gray-300 rounded hover:bg-gray-400 font-bold">+</button>
-                    <div class="w-16 text-right">$${item.total.toFixed(2)}</div>
-                    <button onclick="removeItem(${firstIndex})" class="w-8 h-8 text-xl hover:text-red-600 font-bold">×</button>
+            <div class="flex justify-between items-center">
+                <div class="font-bold text-lg">${fullName}</div>
+                <div class="flex items-center gap-2">
+                    <button onclick="updateQuantity('${fullName}', -1)" class="w-8 h-8 bg-gray-200 rounded font-bold hover:bg-gray-300">−</button>
+                    <span class="font-bold text-xl">${data.indices.length}</span>
+                    <button onclick="updateQuantity('${fullName}', 1)" class="w-8 h-8 bg-gray-200 rounded font-bold hover:bg-gray-300">+</button>
                 </div>
-            `;
+            </div>
+            <div class="flex justify-between items-center mt-2">
+                ${oatButtonHtml}
+                <div class="font-bold text-gray-600">$${data.totalPrice.toFixed(2)}</div>
+            </div>
+        `;
             list.appendChild(div);
         }
-        
+
         total = cart.reduce((sum, item) => sum + item.price, 0);
         document.getElementById('order-total').innerText = `$${total.toFixed(2)}`;
+        validateOrder();
+    }
+
+    function updateQuantity(fullName, delta) {
+        const index = cart.findIndex(item => {
+            const itemFullName = item.sub ? `${item.name} (${item.sub})` : item.name;
+            return itemFullName === fullName;
+        });
+
+        if (index !== -1) {
+            if (delta > 0) {
+                cart.push({ ...cart[index] });
+            } else {
+                cart.splice(index, 1);
+            }
+        }
+        updateUI();
+    }
+
+    function validateOrder() {
+        const name = document.getElementById('order-name-input').value.trim();
+        const sendBtn = document.getElementById('send-button');
+
+        // Button is only enabled if there are items AND a name
+        if (name !== "" && cart.length > 0) {
+            sendBtn.disabled = false;
+            sendBtn.classList.add('hover:bg-opacity-90', 'shadow-lg');
+        } else {
+            sendBtn.disabled = true;
+            sendBtn.classList.remove('hover:bg-opacity-90', 'shadow-lg');
+        }
     }
 
     function submitOrder() {
-        if (cart.length === 0) return;
-        const orderData = { items: cart.map(i => i.name), total: total };
+        const nameInput = document.getElementById('order-name-input');
+        const customerName = nameInput.value.trim();
+        if (cart.length === 0 || !customerName) return;
+
+        // Separate the internal cart for the server
+        const drinks = cart
+            .filter(item => item.type === 'drink')
+            .map(item => item.sub ? `${item.name} (${item.sub})` : item.name);
+
+        const food = cart
+            .filter(item => item.type === 'food')
+            .map(item => item.name);
+
+        const orderData = {
+            customerName,
+            drinks, // Only these show on Barista screen
+            food,   // Only for your JSON logs
+            total
+        };
+
         socket.emit('place-order', orderData);
         cart = [];
+        nameInput.value = '';
         updateUI();
     }
 

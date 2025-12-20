@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
+const fs = require('fs');
 const path = require('path');
 
 const app = express();
@@ -12,25 +13,55 @@ app.use(express.static('public'));
 let totalRevenue = 0;
 let orders = []; // Current active orders
 
+const logFile = 'fundraiser_logs.csv';
+if (!fs.existsSync('fundraiser_logs.csv')) {
+    fs.writeFileSync('fundraiser_logs.csv', 'Timestamp,Event,Customer,Items,Amount\n');
+}
+
+function logToCSV(event, customer, items, amount) {
+    const timestamp = new Date().toLocaleString().replace(/,/g, '');
+    const itemsString = `"${items.join('; ')}"`;
+    const line = `${timestamp},${event},${customer},${itemsString},${amount}\n`;
+    fs.appendFileSync(logFile, line);
+}
+
 io.on('connection', (socket) => {
-    // Send initial data to whoever connects
+    console.log('A user connected');
+
+    // Send initial data to the newly connected client
     socket.emit('init-data', { orders, totalRevenue });
 
-    // When cashier sends an order
+    // MOVE YOUR LISTENERS INSIDE THIS BLOCK:
     socket.on('place-order', (newOrder) => {
-        newOrder.id = Date.now(); // Unique ID
-        newOrder.status = 'pending';
-        orders.push(newOrder);
+        newOrder.id = Date.now() + Math.floor(Math.random() * 1000);
+
+        // Barista Logic: Re-label 'drinks' to 'items' so barista.html works
+        if (newOrder.drinks && newOrder.drinks.length > 0) {
+            const baristaOrder = {
+                id: newOrder.id,
+                customerName: newOrder.customerName,
+                items: newOrder.drinks
+            };
+            orders.push(baristaOrder);
+        }
+
+        // CSV Logging Logic
+        const allItems = [...(newOrder.drinks || []), ...(newOrder.food || [])];
+        logToCSV('ORDER_CREATED', newOrder.customerName, allItems, newOrder.total);
+
         totalRevenue += newOrder.total;
 
-        // Broadcast to everyone (Barista and Cashier)
+        // Broadcast update to EVERYONE (Cashier and Barista)
         io.emit('order-update', { orders, totalRevenue });
     });
 
-    // When barista marks order as complete
     socket.on('complete-order', (orderId) => {
-        orders = orders.filter(o => o.id !== orderId);
-        io.emit('order-update', { orders, totalRevenue });
+        const orderToLog = orders.find(o => o.id === orderId);
+        if (orderToLog) {
+            logToCSV('ORDER_COMPLETED', orderToLog.customerName, orderToLog.items, 0);
+            orders = orders.filter(o => o.id !== orderId);
+            io.emit('order-update', { orders, totalRevenue });
+        }
     });
 });
 
