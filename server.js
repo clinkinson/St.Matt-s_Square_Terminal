@@ -35,24 +35,34 @@ io.on('connection', (socket) => {
     socket.on('place-order', (newOrder) => {
         newOrder.id = Date.now() + Math.floor(Math.random() * 1000);
 
-        // Barista Logic: Re-label 'drinks' to 'items' so barista.html works
         if (newOrder.drinks && newOrder.drinks.length > 0) {
             const baristaOrder = {
                 id: newOrder.id,
                 customerName: newOrder.customerName,
-                items: newOrder.drinks
+                // Convert drink strings into objects to track scratch state
+                items: newOrder.drinks.map(name => ({ name, scratched: false }))
             };
             orders.push(baristaOrder);
         }
 
-        // CSV Logging Logic
         const allItems = [...(newOrder.drinks || []), ...(newOrder.food || [])];
         logToCSV('ORDER_CREATED', newOrder.customerName, allItems, newOrder.total);
-
         totalRevenue += newOrder.total;
-
-        // Broadcast update to EVERYONE (Cashier and Barista)
         io.emit('order-update', { orders, totalRevenue });
+    });
+
+    socket.on('item-scratch', ({ orderId, itemIndex }) => {
+        const order = orders.find(o => o.id === orderId);
+        if (order && order.items[itemIndex]) {
+            order.items[itemIndex].scratched = !order.items[itemIndex].scratched;
+
+            // Auto-complete: if every item is now scratched
+            if (order.items.every(item => item.scratched)) {
+                logToCSV('ORDER_COMPLETED', order.customerName, order.items.map(i => i.name), 0);
+                orders = orders.filter(o => o.id !== orderId);
+            }
+            io.emit('order-update', { orders, totalRevenue });
+        }
     });
 
     socket.on('complete-order', (orderId) => {
