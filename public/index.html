@@ -87,10 +87,10 @@
         </div>
     </div>
 
-    <div class="bg-white p-6 rounded-xl shadow-md flex flex-col h-full border border-gray-200">
+    <div class="bg-white p-6 rounded-xl shadow-md flex flex-col h-full border border-gray-200 overflow-hidden">
         <h2 class="text-2xl font-bold mb-4">Current Order</h2>
 
-        <div id="cart-items" class="flex-grow space-y-2 mb-4 overflow-y-auto pr-2"></div>
+        <div id="cart-items" class="flex-grow space-y-2 mb-4 overflow-y-auto pr-2 min-h-0"></div>
 
         <div class="border-t pt-4">
             <input type="text" id="order-name-input" oninput="validateOrder()" placeholder="Customer Name..."
@@ -102,7 +102,7 @@
             </div>
 
             <button id="send-button" onclick="submitOrder()" disabled
-                    class="w-full bg-[#9DAE72] disabled:bg-gray-300 text-white py-4 rounded-lg text-xl font-bold shadow-md">
+                    class="w-full bg-[#9DAE72] disabled:bg-gray-300 text-white py-4 rounded-lg text-xl font-bold shadow-md transition-all">
                 SEND TO BARISTA
             </button>
             <div class="mt-4 text-center text-sm text-gray-500 font-medium">Raised Today: <span id="grand-total">$0.00</span></div>
