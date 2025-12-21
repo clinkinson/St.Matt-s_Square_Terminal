@@ -12,6 +12,7 @@ app.use(express.static('public'));
 
 let totalRevenue = 0;
 let orders = []; // Current active orders
+let completedOrders = [];
 
 const logFile = 'fundraiser_logs.csv';
 if (!fs.existsSync('fundraiser_logs.csv')) {
@@ -29,17 +30,22 @@ io.on('connection', (socket) => {
     console.log('A user connected');
 
     // Send initial data to the newly connected client
-    socket.emit('init-data', { orders, totalRevenue });
+    socket.emit('init-data', { orders, totalRevenue, completedOrders });
 
     // MOVE YOUR LISTENERS INSIDE THIS BLOCK:
     socket.on('place-order', (newOrder) => {
         newOrder.id = Date.now() + Math.floor(Math.random() * 1000);
+        const timeString = new Date().toLocaleTimeString([], {
+            hour: 'numeric',
+            minute: '2-digit'
+        });
 
         if (newOrder.drinks && newOrder.drinks.length > 0) {
             const baristaOrder = {
                 id: newOrder.id,
                 customerName: newOrder.customerName,
-                // Convert drink strings into objects to track scratch state
+                placedAt: timeString,
+                timestamp: Date.now(), // Store the exact time the order was placed
                 items: newOrder.drinks.map(name => ({ name, scratched: false }))
             };
             orders.push(baristaOrder);
@@ -51,28 +57,56 @@ io.on('connection', (socket) => {
         io.emit('order-update', { orders, totalRevenue });
     });
 
-    socket.on('item-scratch', ({ orderId, itemIndex }) => {
+    socket.on('item-scratch', ({ orderId, itemIndex, newState }) => {
         const order = orders.find(o => o.id === orderId);
-        if (order && order.items[itemIndex]) {
-            order.items[itemIndex].scratched = !order.items[itemIndex].scratched;
 
-            // Auto-complete: if every item is now scratched
+        // CHANGE: Remove the toggle. Only update if newState is true.
+        if (order && order.items[itemIndex] && newState === true) {
+            order.items[itemIndex].scratched = true;
+
+            // Auto-complete if everything is now scratched
             if (order.items.every(item => item.scratched)) {
-                logToCSV('ORDER_COMPLETED', order.customerName, order.items.map(i => i.name), 0);
-                orders = orders.filter(o => o.id !== orderId);
+                moveToHistory(orderId);
+            } else {
+                io.emit('order-update', { orders, totalRevenue });
             }
-            io.emit('order-update', { orders, totalRevenue });
         }
     });
 
     socket.on('complete-order', (orderId) => {
-        const orderToLog = orders.find(o => o.id === orderId);
-        if (orderToLog) {
-            logToCSV('ORDER_COMPLETED', orderToLog.customerName, orderToLog.items, 0);
-            orders = orders.filter(o => o.id !== orderId);
+        moveToHistory(orderId);
+    });
+
+    socket.on('restore-order', (orderId) => {
+        const index = completedOrders.findIndex(o => o.id === orderId);
+        if (index !== -1) {
+            const restored = completedOrders.splice(index, 1)[0];
+            if (restored.items && Array.isArray(restored.items)) {
+                restored.items.forEach(item => {
+                    item.scratched = false;
+                });
+            }
+            orders.push(restored);
             io.emit('order-update', { orders, totalRevenue });
+            io.emit('history-update', { completedOrders });
         }
     });
+    socket.emit('history-init', { completedOrders });
+
+    function moveToHistory(orderId) {
+        const index = orders.findIndex(o => o.id === orderId);
+        if (index !== -1) {
+            const finished = orders.splice(index, 1)[0];
+            finished.completedAt = new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+
+            completedOrders.unshift(finished);
+            if (completedOrders.length > 20) completedOrders.pop();
+
+            logToCSV('ORDER_COMPLETED', finished.customerName, finished.items.map(i => i.name), 0);
+            io.emit('order-update', { orders, totalRevenue });
+            io.emit('history-update', { completedOrders }); // Sync history pages
+        }
+    }
 });
 
 const PORT = 3000;
